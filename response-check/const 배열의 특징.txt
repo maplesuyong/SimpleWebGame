@@ -1,0 +1,16 @@
+1. const 변수의 타입이 배열이 아닐때
+const a = '123'
+a = '456'   // "Assignment to constant variable" 에러
+
+
+2. const 변수의 타입이 배열일때
+const array = [1, 2, 3]
+array = [3, 4, 5]   // "Assignment to constant variable" 에러
+
+
+3. 타입이 배열인 const 변수에 push를 할때
+const array = [1, 2, 3]
+array.push(4)   // array = [1, 2, 3, 4]
+
+
+const는 재선이 안될뿐이지, 내부 요소는 수정가능하다.

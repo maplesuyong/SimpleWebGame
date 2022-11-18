@@ -1,0 +1,9 @@
+메모리 안에만 존재하는 가상의 태그
+
+
+documentFragment 안에 필요한 태그를 추가(append)한 뒤,
+마지막으로 $table로 한 번에 documentFragment를 추가하는 방식
+
+
+documentFragment에 추가하는 것은 성능에 문제가 없지만,
+실제 화면에 보이는 태그에 추가하는 것은 문제가 될 수 있다고 기억하면됨.

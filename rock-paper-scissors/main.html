@@ -1,0 +1,121 @@
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>가위바위보</title>
+  <style>
+    #computer {
+      width: 142px; /* 가위바위보 전체 PNG를 width로 짤라줌 */
+      height: 200px;
+    }
+  </style>
+</head>
+
+<body>
+<div id="computer"></div>
+<div>
+  <button id="scissors" class="btn">가위</button>
+  <button id="rock" class="btn">바위</button>
+  <button id="paper" class="btn">보</button>
+</div>
+<div id="score">0</div>
+<script>
+const $computer = document.querySelector('#computer');
+const $score = document.querySelector('#score');
+const $rock = document.querySelector('#rock');
+const $scissors = document.querySelector('#scissors');
+const $paper = document.querySelector('#paper');
+const IMG_URL = './rsp.png';
+$computer.style.background = `url(${IMG_URL}) 0 0`;
+$computer.style.backgroundSize = 'auto 200px';
+
+const rspX = {
+  scissors: '0',
+  rock: '-220px',
+  paper: '-440px',
+};
+
+let computerChoice = 'scissors';
+const changeComputerHand = () => {
+  if (computerChoice === 'scissors') {  // 가위
+    computerChoice = 'rock';
+  } else if (computerChoice === 'rock') {   // 바위
+    computerChoice = 'paper';
+  } else if (computerChoice === 'paper') {  // 보
+    computerChoice = 'scissors';
+  }
+  $computer.style.background = `url(${IMG_URL}) ${rspX[computerChoice]} 0`;
+  $computer.style.backgroundSize = 'auto 200px';
+}
+let intervalId = setInterval(changeComputerHand, 50);
+
+const scoreTable = {
+  rock: 0,
+  scissors: 1,
+  paper: -1,
+};
+
+// clickable이라는 플래그 변수를 주어서 클릭 이벤트의 동작을 제어하는 방식
+let clickable = true;
+let computer = 0;
+let me = 0;
+const clickButton = () => {
+  if (clickable) {
+    clearInterval(intervalId);
+    clickable = false;
+    const myChoice = event.target.textContent === '바위'
+      ? 'rock'
+      : event.target.textContent === '가위'
+        ? 'scissors'
+        : 'paper';
+    const myScore = scoreTable[myChoice];
+    const computerScore = scoreTable[computerChoice];
+    const diff = myScore - computerScore;
+
+    let message;
+    if (diff === 2 || diff === -1) {
+      me += 1;
+      message = '승리';
+    } else if (diff === -2 || diff === 1) {
+      computer += 1;
+      message = '패배';
+    } else if (diff === 0) {
+      message = '무승부';
+    }
+
+    if (me === 3) {   // 게임 종료
+      $score.textContent = `나의 승리 ${me}:${computer}`;
+    } else if (computer === 3) {  // 게임 종료
+      $score.textContent = `컴퓨터의 승리 ${me}:${computer}`;
+    } else {  // 게임 계속 진행
+      $score.textContent = `${message} ${me}:${computer}`;
+      setTimeout(() => {
+        clickable = true;
+        intervalId = setInterval(changeComputerHand, 50);
+      }, 1000);
+    }
+  }
+};
+
+// 이벤트 추가/제거 방식
+// const clickButton = () => {
+//   clearInterval(intervalId);  // 처음 interval(반복) 멈추기
+//   // 멈춰있을때는 클릭 이벤트를 지워버린다
+//   $rock.removeEventListener('click', clickButton);
+//   $scissors.removeEventListener('click', clickButton);
+//   $paper.removeEventListener('click', clickButton);
+//   setTimeout(() => {  // 1초 뒤에 다시 반복
+//     clearInterval(intervalId);
+//     // 지웠던 클릭 이벤트를 다시 추가한다
+//     $rock.addEventListener('click', clickButton);
+//     $scissors.addEventListener('click', clickButton);
+//     $paper.addEventListener('click', clickButton);
+//     intervalId = setInterval(changeComputerHand, 50);
+//   }, 1000);
+// };
+
+$rock.addEventListener('click', clickButton);
+$scissors.addEventListener('click', clickButton);
+$paper.addEventListener('click', clickButton);
+</script>
+</body>
+</html>

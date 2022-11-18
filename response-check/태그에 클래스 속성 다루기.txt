@@ -1,0 +1,3 @@
+태그.classList.add('클래스');   // 추가
+태그.classList.replace('기존클래스', '수정클래스');   // 수정
+태그.classList.remove('클래스');  // 삭제

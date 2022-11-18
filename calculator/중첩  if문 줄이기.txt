@@ -1,0 +1,80 @@
+1. if 문 다음에 나오는 공통된 절차를 각 분기점 내부에 넣는다.
+
+2. 분기점에서 짧은 절차부터 실행하게 if 문을 작성한다.
+
+3. 짧은 절차가 끝나면 return(함수 내부의 경우)이나 break(for 문 내부의 경우)로 중단한다.
+
+4. else를 제거한다(이때 중첩 하나가 제거된다).
+
+5. 다음 중첩된 분기점이 나오면 1~4의 과정을 반복한다.
+
+
+1분 퀴즈. 다음 if 문의 중첩을 줄여 보세요
+
+(문제)
+function test() { 
+  let result = ''; 
+  if (a) { 
+    if (!b) { 
+      result = 'c'; } 
+    } 
+  } else { 
+    result = 'a'; 
+  } 
+  result += 'b'; 
+  return result; 
+}
+
+(풀이)
+1) if 문 다음에 나오는 공통된 절차를 각 분기점 내부에 넣는다.
+function test() {
+  let result = '';
+  if (a) {
+    if (!b) {
+      result = 'c';
+    }
+    result += 'b';
+    return result;
+  } else {
+    result = 'a';
+    result += 'b';
+    return result;
+  }
+}
+
+2) 분기점에서 짧은 절차부터 실행하게 if 문을 작성한다.
+function test() {
+  let result = '';
+  if (!a) {
+    result = 'a';
+    result += 'b';
+    return result;
+  } else {
+    if (!b) {
+      result = 'c';
+    }
+    result += 'b';
+    return result;
+  }
+}
+
+3) 짧은 절차가 끝나면 return(함수 내부의 경우)이나 break(for 문 내부의 경우)로 중단한다.
+짧은 절차에 이미 return이 들어 있으므로 따로 할 일은 없습니다.
+
+4) else를 제거한다(이때 중첩 하나가 제거된다).
+function test() {
+  let result = '';
+  if (!a) {
+    result = 'a';
+    result += 'b';
+    return result;
+  }
+  if (!b) {
+    result = 'c';
+  }
+  result += 'b';
+  return result;
+}
+
+5) 다음 중첩된 분기점이 나올 때 1~4의 과정을 반복한다.
+다음 분기점은 중첩되지 않으므로 중첩을 제거하는 과정이 마무리됩니다.

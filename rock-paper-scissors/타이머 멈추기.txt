@@ -1,0 +1,7 @@
+setTimeout 타이머 멈추기
+let 아이디 = setTimeout(함수, 밀리초);
+clearTimeout(아이디);
+
+setInterval 타이머 멈추기
+let 아이디 = setInterval(함수, 밀리초);
+clearInterval(아이디);

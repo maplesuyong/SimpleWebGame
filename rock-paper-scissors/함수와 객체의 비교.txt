@@ -1,0 +1,18 @@
+const fun =  (값) => () => {
+  console.log('고차함수입니다', 값);
+}
+fun(1) === fun(1)   // false
+
+{} === {}   // false
+[] === []   // false
+(() => {}) === (() => {})   // false
+
+
+같은 값을 얻어낼려면, 변수에 객체나 함수를 넣어준다.
+const fun =  (값) => () => {
+  console.log('고차함수입니다', 값);
+}
+const fun1 = fun(1);
+태그.addEventListener('click', fun1);
+태그.removeEventListener('click', fun1);
+

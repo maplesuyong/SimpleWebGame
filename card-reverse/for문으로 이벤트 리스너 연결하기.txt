@@ -1,0 +1,16 @@
+// 모두 alert(5)가 찍힌다. 외부의 i를 계속 참조하기 때문이다
+for (var i = 0; i < 5; i++) {
+  $('#target' + i).on('click', function() {
+    alert(i);
+  });
+}
+
+
+// IIFE를 사용하여 클로저를 만들어서 j값은 해당 시점 반복문의 i에 해당하는 숫자로 고정되기 때문에 해결할 수 있다.
+for (var i = 0; i < 5; i++) {
+  (function(j) {
+    $('#target' + j).on('click', function() {
+      alert(j);
+    });
+  })(i);
+}

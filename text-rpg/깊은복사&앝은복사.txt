@@ -1,0 +1,51 @@
+깊은 복사
+
+원래 parse 메서드는 문자열을 객체로, stringify 메서드는 객체를 문자열로 만드는 메서드입니다.
+하지만 두 메서드를 조합해 사용하면 대상 객체를 깊은 복사(deep copy)할 수 있습니다.
+
+간단한 객체는 JSON.parse(JSON.stringify(객체))를 사용해도 크게 문제는 없습니다.
+다만, 성능도 느리고 함수나 Math, Date 같은 객체를 복사할 수 없다는 단점이 있습니다.
+따라서 실무에서는 lodash 같은 라이브러리(다른 사람이 미리 만들어 둔 코드)를 사용하곤 합니다.
+
+
+
+앝은 복사
+
+얕은 복사(shallow copy)는 중첩된 객체가 있을 때 가장 바깥 객체만 복사되고,
+내부 객체는 참조 관계를 유지하는 복사를 의미합니다.
+
+const array = [{ j: 'k' }, { l: 'm' }];
+const shallowCopy = [...array]; // 얕은 복사
+console.log(array === shallowCopy); // false
+console.log(array[0] === shallowCopy[0]); // true
+
+slice 메서드도 앝은 복사    // arr.slice()
+concat 메서드도 앝은 복사   // arr.concat()
+
+얕은 복사를 할 때는 ... 연산자를 사용합니다. ... 연산자를 스프레드(spread) 문법이라고 하는데,
+스프레드 문법은 기존 객체의 속성을 새 객체에 할당할 때 사용합니다.
+배열이라면 [...배열]을 하면 되고, 객체라면 {...객체}를 하면 됩니다.
+
+array와 shallowCopy 변수는 서로 다른데, array[0]과 shallowCopy[0]은 같습니다.
+가장 바깥 객체는 복사되어 참조 관계가 끊어지므로 다른 값이 됩니다.
+
+
+복사하기 퀴즈
+const a = 'b'; 
+const c = ['d', true, 1]; 
+const e = { g: 'h' }; 
+const i = [{ j: 'k' }, { l: 'm' }]; 
+const n = { o: { p: 'q' }};
+
+퀴즈 정답
+const a1 = a;   // 원시 자료형(문자)이기 때문에 바로 참조(대입) 방식으로
+
+const c1 = [...c]   // 일차원 배열이기 때문에 얕은 복사해도 됨
+const c1 = c.slice()  // 마찬가지로 얕은 복사하는 방법중 하나인 slice 메서드를 이용
+const c1 = c.concat()   // 마찬가지로 얕은 복사하는 방법중 하나인 concat 메서드를 이용
+
+const e1 = {...e}   // 일차원 객체이기 때문에 얕은 복사해도 됨
+
+const i1 = JSON.parse(JSON(stringify(i)))   // 이차원 이상의 객체 혹은 배열이기 때문에 깊은 복사를 해야지 완전한 복사가 된다
+
+const n1 = JSON.parse(JSON(stringify(n)))   // 위와 동일

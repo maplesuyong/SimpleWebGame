@@ -1,0 +1,214 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>두더지 잡기</title>
+<style>
+  .cell {
+    display: inline-block; position: relative;
+    width: 200px; height: 200px;
+    background: 'yellow'; overflow: hidden;
+  }
+  .gopher, .bomb {
+    width: 200px; height: 200px; bottom: 0;
+    position: absolute; transition: bottom 1s;
+  }
+  .gopher {
+    background: url('./gopher.png') center center no-repeat;
+    background-size: 200px 200px;
+  }
+  .dead {
+    background: url('./dead_gopher.png') center center no-repeat;
+    background-size: 200px 200px;
+  }
+  .bomb {
+    background: url('./bomb.png') center center no-repeat;
+    background-size: 200px 200px;
+  }
+  .boom {
+    background: url('./explode.png') center center no-repeat;
+    background-size: 200px 200px;
+  }
+  .hidden {
+    bottom: -200px;
+  }
+  .hole {
+    width: 200px; height: 150px; position: absolute; bottom: 0;
+    background: url('./mole-hole.png') center center no-repeat;
+    background-size: 200px 150px;
+  }
+  .hole-front {
+    width: 200px; height: 30px; position: absolute; bottom: 0;
+    background: url('./mole-hole-front.png') center center no-repeat;
+    background-size: 200px 30px;
+  }
+</style>
+</head>
+<body>
+<div>
+  <span id="timer">0</span>초&nbsp;
+  <span id="score">0</span>점
+  <span id="life">3</span>목숨
+  <button id="start">시작</button>
+</div>
+<div id="game">
+  <div class="row">
+    <div class="cell">
+      <div class="hole"></div>
+      <div class="gopher hidden"></div>
+      <div class="bomb hidden"></div>
+      <div class="hole-front"></div>
+    </div>
+    <div class="cell">
+      <div class="hole"></div>
+      <div class="gopher hidden"></div>
+      <div class="bomb hidden"></div>
+      <div class="hole-front"></div>
+    </div>
+    <div class="cell">
+      <div class="hole"></div>
+      <div class="gopher hidden"></div>
+      <div class="bomb hidden"></div>
+      <div class="hole-front"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="cell">
+      <div class="hole"></div>
+      <div class="gopher hidden"></div>
+      <div class="bomb hidden"></div>
+      <div class="hole-front"></div>
+    </div>
+    <div class="cell">
+      <div class="hole"></div>
+      <div class="gopher hidden"></div>
+      <div class="bomb hidden"></div>
+      <div class="hole-front"></div>
+    </div>
+    <div class="cell">
+      <div class="hole"></div>
+      <div class="gopher hidden"></div>
+      <div class="bomb hidden"></div>
+      <div class="hole-front"></div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="cell">
+      <div class="hole"></div>
+      <div class="gopher hidden"></div>
+      <div class="bomb hidden"></div>
+      <div class="hole-front"></div>
+    </div>
+    <div class="cell">
+      <div class="hole"></div>
+      <div class="gopher hidden"></div>
+      <div class="bomb hidden"></div>
+      <div class="hole-front"></div>
+    </div>
+    <div class="cell">
+      <div class="hole"></div>
+      <div class="gopher hidden"></div>
+      <div class="bomb hidden"></div>
+      <div class="hole-front"></div>
+    </div>
+  </div>
+</div>
+<script>
+const $timer = document.querySelector('#timer');
+const $score = document.querySelector('#score');
+const $game = document.querySelector('#game');
+const $start = document.querySelector('#start');
+const $life = document.querySelector('#life');
+const $$cells = document.querySelectorAll('.cell');   // class는 여러개이므로 $$로 구별
+
+const holes = [0, 0, 0, 0, 0, 0, 0, 0, 0];  // 두더지를 사라지게하는 타이머의 아이디를 저장, 나중에 타이머를 취소할 때 사용.
+                                            // 타이머가 등록되어 있으면 0이 아닌 값이 배열에 저장되고 등록되어 있지 않다면 0이 들어있으므로
+                                            // 각 칸에 두더지가 있는지 없는지를 holes로 구분할 수 있다
+let started = false;  // 시작 이벤트 리스너가 한번만 동작하도록 플래그 변수 started를 만들어서 관리
+let score = 0;
+let time = 10;
+let life = 3;
+let timerId;
+let tickId;
+
+$start.addEventListener('click', () => {
+  if (started) return;  // 이미 시작했으면 무시
+  started = true;
+  console.log('시작');
+  timerId = setInterval(() => {
+    time = (time * 10 - 1) / 10;  // 소수점 계산 시 자투리 소수점 자리 표기 문제를 해결
+    $timer.textContent = time;
+    if (time === 0) {
+      clearInterval(timerId);
+      clearInterval(tickId);
+      setTimeout(() => {  // setTimeout으로 0초까지 화면에 표시된 이후로 alert 창이 뜨도록 시간 간격을 준다
+        alert(`게임 오버! 점수는 ${score}점`);
+      }, 50);
+    }
+  }, 100);
+  tickId = setInterval(tick, 1000);   // 반복적으로 두더지가 올라왔다가 내려가게 한다
+  tick();
+})
+
+// 누적 범위로 확률을 설정 (두더지 30%, 폭탄 20%)
+let gopherPercent = 0.3;
+let bombPercent = 0.5;
+function tick() {   // 비어있는 칸에 두더지나 폭탄을 보여준다
+  holes.forEach((hole, index) => {
+    if (hole) return;   // holes 배열 안에 값이 있으면 두더지가 보이는 상황이므로 타이머를 실행하지 않는다
+    const randomValue = Math.random();
+    if (randomValue < gopherPercent) {
+      const $gopher = $$cells[index].querySelector('.gopher');
+      holes[index] = setTimeout(() => {   // 1초 후 클래스에 hidden을 추가해서 사라지게 만든다
+        $gopher.classList.add('hidden');
+        holes[index] = 0;   // 두더지가 들어가면(add hidden) 해당 타이머의 아이디를 초기화한다
+      }, 1000);
+      $gopher.classList.remove('hidden');   // 앞의 hidden을 제거하는 비동기 함수보다 먼저 실행되므로 hidden을 먼저 지워서 두더지를 보여준다
+    } else if (randomValue < bombPercent) {
+      const $bomb = $$cells[index].querySelector('.bomb');
+      holes[index] = setTimeout(() => {   // 1초 후 클래스에 hidden을 추가해서 사라지게 만든다
+        $bomb.classList.add('hidden');
+        holes[index] = 0;   // 두더지가 들어가면(add hidden) 해당 타이머의 아이디를 초기화한다
+      }, 1000);
+      $bomb.classList.remove('hidden');   // 앞의 hidden을 제거하는 비동기 함수보다 먼저 실행되므로 hidden을 먼저 지워서 두더지를 보여준다
+    }
+  });
+}
+
+$$cells.forEach(($cell, index) => {   // 각 칸의 클릭 이벤트 리스너
+  $cell.querySelector('.gopher').addEventListener('click', (e) => {   // 두더지 클릭시
+    if (!e.target.classList.contains('dead')) {   // 클릭되서 죽은 두더지를 클릭해서 중복 점수 얻는 것을 방지
+      score += 1;
+      $score.textContent = score;
+    }
+    e.target.classList.add('dead');
+    e.target.classList.add('hidden');
+    clearTimeout(holes[index]);   // 기존의 내려가는 타이머 제거
+    setTimeout(() => {
+      holes[index] = 0;
+      e.target.classList.remove('dead');
+    }, 1000);
+  });
+  $cell.querySelector('.bomb').addEventListener('click', (e) => {   // 폭탄 클릭시
+    if (!e.target.classList.contains('boom')) {   // 클릭되서 터진 폭탄을 클릭해서 중복 점수 하락 방지
+      life--;
+      $life.textContent = life;
+    }
+    e.target.classList.add('boom');
+    e.target.classList.add('hidden');
+    clearTimeout(holes[index]);   // 기존의 내려가는 타이머 제거
+    setTimeout(() => {
+      holes[index] = 0;
+      e.target.classList.remove('boom');
+    }, 1000);
+    if (life === 0) {
+      clearInterval(timerId);
+      clearInterval(tickId);
+      setTimeout(() => {
+        alert(`게임 오버! 점수는 ${score}점`);
+      }, 50);
+    }
+  });
+});
+</script>
+</body>
+</html>

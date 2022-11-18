@@ -1,0 +1,17 @@
+new Date() : 현재 시각
+ex) Wed Apr 21 2021 23:39:34 GMT+0900 (대한민국 표준시)
+
+new Date().getYear()
+ex) 121
+
+new Date().getFullYear()
+ex) 2021
+
+new Date().getMonth()
+ex) 3   // 현재 월에 +1
+
+new Date().getHours()
+ex) 23
+
+new Date().toLocaleString()
+ex) "2021. 4. 21. 오후 11:41:37"

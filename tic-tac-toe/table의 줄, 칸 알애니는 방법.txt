@@ -1,0 +1,7 @@
+td 태그의 이차원 인덱스들을 메서드로 바로 알 수 있는 방법
+
+tr 태그(target.parentNode)는 rowIndex라는 속성을 제공
+td 태그(target)는 cellIndex라는 속성을 제공
+
+const rowIndex = target.parentNode.rowIndex;
+const cellIndex = target.cellIndex;
